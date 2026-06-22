@@ -25,9 +25,9 @@ class MainWindow(QMainWindow):
 
     def boton_alternado(self, valor):
         if valor:
-            self.boton.setText("Estoy activado")
+            self.boton.setText(f"Estoy activado {valor}")
         else:
-            self.boton.setText("Estoy deactivado")
+            self.boton.setText("Estoy desactivado")
 
     # def boton_clicado(self):
     #     print("Botón clicado")

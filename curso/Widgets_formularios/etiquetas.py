@@ -13,14 +13,23 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.resize(480, 320)
 
+        # Etiqueta
         etiqueta = QLabel("Soy una etiqueta")
+        # fuente = etiqueta.font()
+        # fuente.setPointSize(24)
+        # etiqueta.setFont(fuente)
         fuente = QFont("Comic Sans MS", 24)
         etiqueta.setFont(fuente)
-        etiqueta.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        etiqueta.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        print(Path(__file__).parent.absolute())
+        print(Path("chat_bot.jpg"))
+        print(Path("chat_bot.jpg").absolute())
 
-        imagen = QPixmap(absPath("fondo.jpg"))
-        etiqueta.setPixmap(imagen)
-        etiqueta.setScaledContents(True)
+
+        # poner una imagen en la etiqueta
+        # imagen = QPixmap(absPath("chat_bot.jpg"))
+        # etiqueta.setPixmap(imagen)
+        # etiqueta.setScaledContents(True)
 
         self.setCentralWidget(etiqueta)
 
