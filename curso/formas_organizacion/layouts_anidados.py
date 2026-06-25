@@ -18,14 +18,14 @@ class MainWindow(QMainWindow):
         layout_ver1 = QVBoxLayout()
         layout_ver2 = QVBoxLayout()
 
-        layout_hor2 = QHBoxLayout()
-        layout_hor2.addWidget(Caja("yellow"))
+        # layout_hor2 = QHBoxLayout()
+        # layout_hor2.addWidget(Caja("yellow"))
 
         layout_hor.addWidget(Caja("green"))
         layout_hor.addLayout(layout_ver1)
         layout_hor.addLayout(layout_ver2)
 
-        layout_ver1.addLayout(layout_hor2)
+        # layout_ver1.addLayout(layout_hor)
         layout_ver1.addWidget(Caja("blue"))
         layout_ver1.addWidget(Caja("red"))
 
@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         layout_ver2.addWidget(Caja("magenta"))
         layout_ver2.addWidget(Caja("purple"))
 
-        layout_hor2.addWidget(Caja("red"))
+        # layout_hor2.addWidget(Caja("red"))
 
 
         # Contenedor central
