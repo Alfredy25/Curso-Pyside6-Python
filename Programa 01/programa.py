@@ -33,6 +33,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Ajustar tamaño de columnas
         self.tabla.resizeColumnsToContents()
+
         # Cambiar nombres de encabezado
         self.tabla.setHorizontalHeaderItem(0, QTableWidgetItem("Nombre"))
         self.tabla.setHorizontalHeaderItem(1, QTableWidgetItem("Empleo"))
