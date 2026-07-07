@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="iconos">
+    <file>curso/extractor_ocr.png</file>
+    <file>curso/informacion_ico.png</file>
+    <file>curso/x_icon.png</file>
+  </qresource>
+</RCC>
