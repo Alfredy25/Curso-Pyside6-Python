@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QLineEdit,
     QVBoxLayout,
-    QComboBox, QDoubleSpinBox
+    QComboBox, QDoubleSpinBox, QMessageBox
 )
 
 from course.alfredo.pyside.kardex.app.entity.operation import Operation
@@ -67,7 +67,8 @@ class FinancialFormDialog(QDialog):
         cancel_btn = button_box.addButton(QDialogButtonBox.StandardButton.Cancel)
         cancel_btn.setText("Cancelar")
 
-        button_box.accepted.connect(self.accept)
+        # button_box.accepted.connect(self.accept)
+        button_box.accepted.connect(self._on_accept)
         button_box.rejected.connect(self.reject)
 
         main_layout = QVBoxLayout()
@@ -75,6 +76,10 @@ class FinancialFormDialog(QDialog):
         main_layout.addWidget(button_box)
 
         self.setLayout(main_layout)
+    def _on_accept(self):
+        if not self.validate_form():
+            return # No cerrar el dialogo
+        self.accept() # Cerrar solo si esta todo valido
 
     def _fill_from_operation(self, operation: Operation):
         self.company_input.setText(operation.company or "")
@@ -86,12 +91,12 @@ class FinancialFormDialog(QDialog):
             self.operation_input.setCurrentIndex(idx)
 
         if operation.movement_date:
-            qd = QDate(operation.movement_date.year(), operation.movement_date.month(), operation.movement_date.day())
+            qd = QDate(operation.movement_date.year, operation.movement_date.month, operation.movement_date.day)
             self.movement_date_input.setDate(qd)
 
         self.instrument_input.setText(operation.instrument or "")
-        self.quantity_input.setValue(float(operation.quantity or 0))
-        self.price_input.setValue(float(operation.price or 0))
+        self.quantity_input.setValue(float(operation.quantity or 0.00))
+        self.price_input.setValue(float(operation.price or 0.00))
 
     def apply_to_operation(self, operation: Operation):
         """
@@ -111,25 +116,7 @@ class FinancialFormDialog(QDialog):
         operation.quantity = Decimal(self.quantity_input.value())
         operation.price = Decimal(self.price_input.value())
 
-    def get_new_operation_data(self) -> dict:
-        """
-        Para modo 'crear' (cuando no se pasa Operation)
-        """
-        qdate: QDate = self.movement_date_input.date()
-        movement_date_py =  date(qdate.year(), qdate.month(), qdate.day())
-
-        return {
-            "company": self.company_input.text().strip(),
-            "account_number": self.account_number_input.text().strip(),
-            "issuer": self.issuer_input.text().strip(),
-            "operation": self.operation_input.currentText(),
-            "movement_date": movement_date_py,
-            "instrument": self.instrument_input.text().strip(),
-            "quantity": self.quantity_input.value(),
-            "price": self.price_input.value(),
-        }
-
-    def get_operation_data(self) -> Operation:
+    def get_new_operation_data(self) -> Operation:
         """
         Return raw data (Python types) to build Operation.
         """
@@ -150,3 +137,62 @@ class FinancialFormDialog(QDialog):
 
         return operation
 
+    def validate_form(self) -> bool:
+
+        errors = []
+        first_error_widget = None
+
+        # Campos obligatorios
+        required_fields = [
+            (self.company_input, "Company"),
+            (self.account_number_input, "Número de cuenta"),
+            (self.issuer_input, "Emisor"),
+            (self.instrument_input, "Instrumento")
+        ]
+
+        for widget, label in required_fields:
+            if not widget.text().strip():
+                errors.append(f"• El campo '{label}' es obligatorio")
+                if first_error_widget is None:
+                    first_error_widget = widget
+
+        # Operación seleccionada
+        if not self.operation_input.currentText().strip():
+            errors.append("• Debe seleccionar una operación")
+            if first_error_widget is None:
+                first_error_widget = self.operation_input
+
+        # Fecha válida
+        if not self.movement_date_input.date().isValid():
+            errors.append("• La fecha de movimiento no es válida")
+            if first_error_widget is None:
+                first_error_widget = self.movement_date_input
+
+        # Cantidad
+        qty = self.quantity_input.value()
+        if qty <= Decimal("0.00"):
+            errors.append("• La cantidad debe ser mayor que cero")
+            if first_error_widget is None:
+                first_error_widget = self.quantity_input
+
+        # Precio
+        price = self.price_input.value()
+        if price <= 0:
+            errors.append("• El precio debe ser mayor que cero")
+            if first_error_widget is None:
+                first_error_widget = self.price_input
+
+        # Mostrar todos los errores encontrados
+        if errors:
+            QMessageBox.warning(
+                self,
+                "Validación",
+                "Se encontraron los siguientes errores:\n\n" + "\n".join(errors)
+            )
+
+            if first_error_widget:
+                first_error_widget.setFocus()
+
+            return False
+
+        return True

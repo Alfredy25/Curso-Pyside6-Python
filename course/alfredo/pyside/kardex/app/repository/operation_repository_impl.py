@@ -34,13 +34,13 @@ class OperationRepositoryImpl(OperationRepository):
     def save(self, operation: Operation) -> Operation:
         with self._session_factory() as session:
             try:
-                # Insert
+                # Insert si no se tiene un id en el objeto Operation pasado a guardar es decir es nuevo
                 if not getattr(operation, 'id', None):
                     session.add(operation)
                     session.commit()
                     session.refresh(operation)
                     return operation
-
+                # UPDATE si existe id entonces la condicion anterior es falsa y pasa a una actualizacion
                 managed_operation = session.merge(operation)
                 session.commit()
                 session.refresh(managed_operation)
